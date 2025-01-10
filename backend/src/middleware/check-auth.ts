@@ -3,11 +3,13 @@ import { Response, NextFunction, Request } from "express";
 import { expressjwt } from "express-jwt";
 import { isRegExp } from "lodash";
 
+const JWT_KEY = process.env.JWT_KEY || "";
+
 // Define paths that do not require authorization (excluded routes)
 export const excludedPaths: (string | RegExp)[] = [
   "/api",
-  "/api/auth",
-  "/api/auth/reset-password",
+  "/api/user/auth",
+  "/api/user/auth/reset-password",
   /^\/api\/user\/auth\/reset-password\/[^/]+$/, //TODO: regrex can be used to add check for mongodb id
 ];
 
@@ -23,10 +25,10 @@ export const optionalPaths: (string | RegExp)[] = [
 
 const checkAuth = (req: Request, res: Response, next: NextFunction) => {
   const checkAuth = expressjwt({
-    secret: process.env.JWT_KEY!,
+    secret: JWT_KEY,
     algorithms: ["HS256"],
     requestProperty: "userData",
-    credentialsRequired: true,
+    credentialsRequired: true, 
     getToken: (req) => req.headers["authorization"]?.split(" ")[1],
   }).unless({
     path: excludedPaths,
@@ -59,7 +61,7 @@ export default checkAuth;
 export interface JWTRequest extends Request {
   userData: {
     userId: string;
-    email: string;
+    email:string;
     deactivated_at?: Date;
   };
 }

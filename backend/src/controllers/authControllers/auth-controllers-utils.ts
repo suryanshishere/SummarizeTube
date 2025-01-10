@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { NextFunction, Response, Request } from "express";
 import { random } from "lodash";
 
-const JWT_KEY = process.env.JWT_KEY!;
+const JWT_KEY = process.env.JWT_KEY || "";
 const JWT_KEY_EXPIRY = process.env.JWT_KEY_EXPIRY || "15";
 // const EMAIL_VERIFICATION_TOKEN_EXPIRY =
 //   Number(process.env.EMAIL_VERIFICATION_TOKEN_EXPIRY) || 3;
