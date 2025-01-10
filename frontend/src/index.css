@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h2 {
+    @apply text-lg font-bold p-1 self-center w-fit;
+  }
+  hr {
+    @apply w-full border-t-1 border-custom-black;
+  }
+
+  .custom-link {
+    @apply underline decoration-1 text-custom-red  decoration-custom-red underline-offset-4 hover:text-custom-blue visited:decoration-custom-black visited:text-custom-black;
+  }
+}
+
+/* :root {
+  --border-radius: 10px;
+  --border-radius-more: 25px;
+  --font-header-size: 1.25rem;
+  --font-nav-size: 1rem;
+  --font-size: 1.15rem;
+  --font-min-size: .8rem;
+  --hover-color: #C7C8CC;
+  --hover-faint-color: rgba(128, 128, 128, 0.211);
+  --color-backdrop: #2C3333;
+  --color-gray: gray;
+  --color-red: brown;
+  --color-white: white;
+  --color-black: black;
+  --color-green: #7F9F80;
+  --color-dark-blue: #131921;
+  --color-blue: #1679AB ;
+  --color-yellow: #EEEBDD;
+  --color-white-yellow: #FEFAF6;
+  --gap-main-nav: 2rem;
+  --gap-more: 1.5rem;
+  --gap: .5rem;
+  --gap-faint: 0.2rem;
+  --padding-page: 10vw;
+  --padding-button: .25rem .5rem;
+  --height-main-nav: 3rem;
+  --height-sub-main-nav: 2rem;
+  --height-main-nav-sec: calc(var(--height-main-nav) + var(--height-sub-main-nav) + 2.5rem );
+  --height-footer: 5.5rem;
+} */
+
+body {
+  margin: 0;
+}
+
+button {
+  border: unset;
+  background: unset;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Custom class to hide the scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Webkit browsers */
+}

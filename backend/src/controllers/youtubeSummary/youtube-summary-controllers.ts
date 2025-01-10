@@ -26,10 +26,18 @@ export const youtubeUrlResponse = async (
       return res.status(400).json({ message: "YouTube URL is required." });
     }
 
-    const user = await UserModal.findById(userId).session(session); // Use session to ensure atomic operations
+    const user = await UserModal.findById(userId).session(session);
     if (!user) return next(new HttpError("User not found!", 404));
-// await getYoutubeTranscript(youtubeUrl) || TODO
-    const transcript =  "try again summary and history";
+
+    const transcript = await getYoutubeTranscript(youtubeUrl);
+
+    if (!transcript || transcript.length === 0)
+      return next(
+        new HttpError(
+          "Transcript is not found, try another english subtle video.",
+          404
+        )
+      );
 
     // Call the Gemini API to get the summary
     const summary = await summarizeTranscript(
@@ -38,7 +46,7 @@ export const youtubeUrlResponse = async (
     );
 
     // Merge the new summary with the existing history
-    user.summarize_history = [summary, ...(user.summarize_history || [])];
+    user.summarize_history = [...summary, ...(user.summarize_history || [])];
 
     // Save the user data with the updated summarize_history, using session
     await user.save({ session });
@@ -57,7 +65,13 @@ export const youtubeUrlResponse = async (
     }
 
     console.error(error);
-    next(new HttpError("Fetching YouTube summary failed, try again!", 500));
+    // Propagate the error to the client with detailed message and status code
+    const errorMessage = error instanceof HttpError ? error.message : "Fetching YouTube summary failed, try again!";
+    const statusCode = error instanceof HttpError ? error.code : 500;
+    
+    return res.status(statusCode).json({
+      message: errorMessage,
+    });
   } finally {
     // End the session
     session.endSession();
@@ -87,15 +101,12 @@ export const getUserSummaryHistory = async (
       message: "User summary history fetched successfully",
       data: user.summarize_history || [],
     });
-  } catch (error) { 
+  } catch (error) {
     return next(
       new HttpError("Fetching summary history failed, try again later!", 500)
     );
   }
 };
-
-
-
 
 export const deleteAllSummaryHistory = async (
   req: Request,

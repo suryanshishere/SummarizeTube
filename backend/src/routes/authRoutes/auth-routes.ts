@@ -1,5 +1,6 @@
 import {
   auth,
+  sendVerificationOtp,
   verifyEmail,
 } from "@controllers/authControllers/auth-controllers";
 import { USER_ENV_DATA } from "@shared/env.data";
@@ -27,7 +28,7 @@ router.post(
   ],
   auth
 );
-
+router.post("/send-verification-otp", sendVerificationOtp);
 // Route for verifying email
 router.post(
   "/verify-email",

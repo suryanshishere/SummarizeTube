@@ -1,4 +1,3 @@
-import { Request, Response, NextFunction } from "express";
 import HttpError from "@utils/http-errors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
@@ -23,20 +22,17 @@ export const getYoutubeTranscript = async (url: string): Promise<string> => {
     const response = await axios.request(options);
 
     if (!response.data[0]) {
-      throw new HttpError("Transcript not found", 400);
+      throw new HttpError("Transcript not found, another video url!", 400);
     }
 
     return response.data[0].transcriptionAsText;
   } catch (error: any) {
     console.error("Error fetching transcript:", error.message);
-    throw new HttpError(
-      error.response?.data?.message || "Failed to fetch transcript",
-      500
-    );
+    throw new HttpError("Transcript not found!", 500);
   }
 };
 
-export const extractVideoId = (url: string): string => {
+const extractVideoId = (url: string): string => {
   const regex =
     /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
