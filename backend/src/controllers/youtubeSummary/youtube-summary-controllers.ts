@@ -1,68 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import axios from "axios";
 import HttpError from "@utils/http-errors";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { JWTRequest } from "@middleware/check-auth";
 import UserModal from "@models/user-model";
 import { handleValidationErrors } from "@controllers/validation-error";
 import mongoose from "mongoose";
-
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY!;
-
-export const getYoutubeTranscript = async (url: string): Promise<string> => {
-  try {
-    const videoId = extractVideoId(url);
-    const options = {
-      method: "GET",
-      url: "https://youtube-transcriptor.p.rapidapi.com/transcript",
-      params: {
-        video_id: videoId,
-        lang: "en",
-      },
-      headers: {
-        "x-rapidapi-key": RAPIDAPI_KEY,
-        "x-rapidapi-host": "youtube-transcriptor.p.rapidapi.com",
-      },
-    };
-    const response = await axios.request(options);
-
-    if (!response.data[0]) {
-      throw new HttpError("Transcript not found", 400);
-    }
-
-    return response.data[0].transcriptionAsText;
-  } catch (error: any) {
-    console.error("Error fetching transcript:", error.message);
-    throw new HttpError(
-      error.response?.data?.message || "Failed to fetch transcript",
-      500
-    );
-  }
-};
-
-const extractVideoId = (url: string): string => {
-  const regex =
-    /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regex);
-
-  if (match && match[1]) {
-    return match[1];
-  }
-
-  console.error("Invalid YouTube URL: Could not extract video ID");
-  throw new HttpError("Invalid YouTube URL", 400);
-};
-
-const summarizeTranscript = async (
-  transcript: string,
-  apiKey: string
-): Promise<string> => {
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const prompt = `${transcript} Summarise into points.`;
-  const result = await model.generateContent(prompt);
-  return result.response?.text() ?? "No summary generated.";
-};
+import {
+  getYoutubeTranscript,
+  summarizeTranscript,
+} from "./youtube-summary-utils";
 
 export const youtubeUrlResponse = async (
   req: Request,
@@ -83,8 +28,8 @@ export const youtubeUrlResponse = async (
 
     const user = await UserModal.findById(userId).session(session); // Use session to ensure atomic operations
     if (!user) return next(new HttpError("User not found!", 404));
-
-    const transcript = await getYoutubeTranscript(youtubeUrl);
+// await getYoutubeTranscript(youtubeUrl) || TODO
+    const transcript =  "try again summary and history";
 
     // Call the Gemini API to get the summary
     const summary = await summarizeTranscript(
@@ -93,7 +38,7 @@ export const youtubeUrlResponse = async (
     );
 
     // Merge the new summary with the existing history
-    user.summarize_history = [...summary, ...(user.summarize_history || [])];
+    user.summarize_history = [summary, ...(user.summarize_history || [])];
 
     // Save the user data with the updated summarize_history, using session
     await user.save({ session });
@@ -116,5 +61,71 @@ export const youtubeUrlResponse = async (
   } finally {
     // End the session
     session.endSession();
+  }
+};
+
+export const getUserSummaryHistory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = (req as JWTRequest).userData.userId;
+
+    const user = await UserModal.findById(userId, "summarize_history");
+
+    if (!user) {
+      return next(
+        new HttpError(
+          "User not found! Try login again or create new account.",
+          404
+        )
+      );
+    }
+
+    return res.status(200).json({
+      message: "User summary history fetched successfully",
+      data: user.summarize_history || [],
+    });
+  } catch (error) { 
+    return next(
+      new HttpError("Fetching summary history failed, try again later!", 500)
+    );
+  }
+};
+
+
+
+
+export const deleteAllSummaryHistory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = (req as JWTRequest).userData.userId;
+
+    // Update the user and set summarize_history to an empty array
+    const user = await UserModal.findByIdAndUpdate(
+      userId,
+      { $set: { summarize_history: [] } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Respond to the client
+    return res.status(200).json({
+      success: true,
+      message: "All summaries deleted successfully.",
+    });
+  } catch (error) {
+    // Handle any errors
+    return next(error);
   }
 };

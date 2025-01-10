@@ -3,13 +3,12 @@ import { Response, NextFunction, Request } from "express";
 import { expressjwt } from "express-jwt";
 import { isRegExp } from "lodash";
 
-const JWT_KEY = process.env.JWT_KEY || "";
 
 // Define paths that do not require authorization (excluded routes)
 export const excludedPaths: (string | RegExp)[] = [
   "/api",
-  "/api/user/auth",
-  "/api/user/auth/reset-password",
+  "/api/auth",
+  "/api/auth/reset-password",
   /^\/api\/user\/auth\/reset-password\/[^/]+$/, //TODO: regrex can be used to add check for mongodb id
 ];
 
@@ -19,11 +18,16 @@ export const optionalPaths: (string | RegExp)[] = [
   "/api/public/home",
   /^\/api\/public\/sections\/[^/]+$/,
   /^\/api\/public\/sections\/[^/]+\/[^/]+$/,
-  "/api/user/auth/send-password-reset-link",
-  "/api/user/auth/send-verification-otp",
+  "/api/auth/send-password-reset-link",
+  "/api/auth/send-verification-otp",
 ];
 
+
 const checkAuth = (req: Request, res: Response, next: NextFunction) => {
+  const JWT_KEY:string = process.env.JWT_KEY || "";
+  if (!JWT_KEY) {
+    throw new Error("JWT_KEY is not defined in the environment variables.");
+  } 
   const checkAuth = expressjwt({
     secret: JWT_KEY,
     algorithms: ["HS256"],
