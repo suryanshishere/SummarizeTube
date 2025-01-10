@@ -14,9 +14,9 @@ export const youtubeUrlResponse = async (
   res: Response,
   next: NextFunction
 ) => {
-  const session = await mongoose.startSession(); 
+  const session = await mongoose.startSession();
   try {
-    session.startTransaction();  
+    session.startTransaction();
 
     handleValidationErrors(req, next);
     const { youtubeUrl } = req.body;
@@ -46,7 +46,7 @@ export const youtubeUrlResponse = async (
     );
 
     // Merge the new summary with the existing history
-    user.summarize_history = [...summary, ...(user.summarize_history || [])];
+    user.summarize_history = [summary, ...(user.summarize_history || [])];
 
     // Save the user data with the updated summarize_history, using session
     await user.save({ session });
