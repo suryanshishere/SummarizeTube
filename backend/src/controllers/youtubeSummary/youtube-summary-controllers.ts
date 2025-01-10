@@ -14,9 +14,9 @@ export const youtubeUrlResponse = async (
   res: Response,
   next: NextFunction
 ) => {
-  const session = await mongoose.startSession(); // Start a new session
+  const session = await mongoose.startSession(); 
   try {
-    session.startTransaction(); // Start the transaction
+    session.startTransaction();  
 
     handleValidationErrors(req, next);
     const { youtubeUrl } = req.body;
@@ -66,9 +66,12 @@ export const youtubeUrlResponse = async (
 
     console.error(error);
     // Propagate the error to the client with detailed message and status code
-    const errorMessage = error instanceof HttpError ? error.message : "Fetching YouTube summary failed, try again!";
+    const errorMessage =
+      error instanceof HttpError
+        ? error.message
+        : "Fetching YouTube summary failed, try again!";
     const statusCode = error instanceof HttpError ? error.code : 500;
-    
+
     return res.status(statusCode).json({
       message: errorMessage,
     });

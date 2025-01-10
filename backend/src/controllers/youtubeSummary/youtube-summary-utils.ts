@@ -2,10 +2,9 @@ import HttpError from "@utils/http-errors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
 
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY!;
-
 export const getYoutubeTranscript = async (url: string): Promise<string> => {
-  try {
+  const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY!;
+  try { 
     const videoId = extractVideoId(url);
     const options = {
       method: "GET",
@@ -22,12 +21,15 @@ export const getYoutubeTranscript = async (url: string): Promise<string> => {
     const response = await axios.request(options);
 
     if (!response.data[0]) {
-      throw new HttpError("Transcript not found, another video url!", 400);
+      throw new HttpError(
+        "Transcript not found, another youtube video url!",
+        400
+      );
     }
 
     return response.data[0].transcriptionAsText;
   } catch (error: any) {
-    console.error("Error fetching transcript:", error.message);
+    console.error("Error fetching transcript:", error.response?.data?.message);
     throw new HttpError("Transcript not found!", 500);
   }
 };

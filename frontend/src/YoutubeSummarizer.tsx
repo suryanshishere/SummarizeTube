@@ -78,7 +78,7 @@ const YoutubeSummarizer: React.FC = () => {
     <div className="w-full h-full flex flex-col items-center overflow-y-auto bg-custom-white">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-1/2 flex flex-col gap-2 "
+        className="w-3/5 flex flex-col gap-2 "
       >
         <YouTubeIcon
           className="self-center text-custom-red"
@@ -89,7 +89,7 @@ const YoutubeSummarizer: React.FC = () => {
           error={!!errors.youtubeUrl}
           helperText={errors.youtubeUrl?.message}
           placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-          classProp="placeholder:text-sm outline-custom-green"
+          classProp="placeholder:text-sm border-4 border-custom-gray"
           {...register("youtubeUrl")}
         />
         <Button
