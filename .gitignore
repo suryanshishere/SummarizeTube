@@ -1,0 +1,17 @@
+# Ignore node_modules everywhere
+node_modules
+
+# Ignore .env and debug logs everywhere
+.env
+debug.log
+
+# Ignore temp.txt only in the current directory
+temp.txt
+
+# Ignore specific files everywhere
+package.json
+package-lock.json
+
+# Ignore debug.log in backend and frontend directories
+backend/debug.log
+frontend/debug.log
