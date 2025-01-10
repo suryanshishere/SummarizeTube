@@ -1,9 +1,7 @@
 import axios from "axios";
 import store from "store";
 import { handleAccountDeactivatedAt } from "store/auth-slice";
-
-const DEACTIVATED_ACCOUNT_DAYS =
-  Number(process.env.REACT_APP_DEACTIVATED_ACCOUNT_DAYS) || 30;
+ 
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:5050/api";
 
 const getTokenFromLocalStorage = () => {

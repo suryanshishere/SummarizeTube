@@ -45,7 +45,7 @@ function App() {
               LOGOUT
             </button>
           ) : (
-            <h3></h3>
+            <h3>.</h3>
           )}
         </h2>
 
