@@ -5,12 +5,7 @@ import {  RootState } from "store/index";
 import {   useSelector } from "react-redux";  
 import LockIcon from "@mui/icons-material/Lock";
 
-enum AuthState {
-  LOGIN,
-  FORGOT_PASSWORD,
-  VERIFY_EMAIL,
-}
-
+ 
 export interface AuthProps {
   onBack?: () => void;
   onBackLogin?: () => void;
@@ -27,7 +22,7 @@ const Auth: React.FC<AuthProps> = () => {
   return (
     <div className="flex flex-col gap-4">
       <h2 className="italic"> 
-        AUTHORIZATION <LockIcon fontSize="small" />{" "}
+        AUTHORIZATION <LockIcon fontSize="small" /> 
       </h2>
       {token && !isEmailVerified ? <EmailVerification /> : <AuthComponent />}
     </div>
