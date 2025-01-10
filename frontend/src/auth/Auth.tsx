@@ -21,8 +21,8 @@ const Auth: React.FC<AuthProps> = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="italic"> 
-        AUTHORIZATION <LockIcon fontSize="small" /> 
+      <h2 className=""> 
+        {`AUTHORIZATION (Login / SignUp)`} <LockIcon fontSize="small" /> 
       </h2>
       {token && !isEmailVerified ? <EmailVerification /> : <AuthComponent />}
     </div>
