@@ -9,8 +9,8 @@ debug.log
 temp.txt
 
 # Ignore specific files everywhere
-package.json
-package-lock.json
+# package.json
+# package-lock.json
 
 # Ignore debug.log in backend and frontend directories
 backend/debug.log
